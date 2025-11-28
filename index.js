@@ -17,7 +17,7 @@ window.onload = function() {
     const userId = localStorage.getItem('userId');
     if (userId) {
         alert('Ya tienes una sesión activa. Redirigiendo...');
-        window.location.href = 'PrimerModulo.html';
+        window.location.href = 'primermodulo.html';
         return;
     }
     
