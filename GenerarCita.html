@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Cita Médica - Sistema de Citas Médicas ESSALUD</title>
+    <link rel="icon" type="image/jpeg" href="Familia.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="GenerarCita.css">
+</head>
+<body>
+    <!-- Barra superior -->
+    <div class="top-container">
+        <div class="top-logo-container">
+            <img src="https://dondemeatiendo.essalud.gob.pe/assets/images/logo-essalud-v2.png" alt="EsSalud Logo">
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="PrimerModulo.html" class="home-button">
+                <span class="home-text">Volver al Inicio</span>
+            </a>
+            <button class="user-menu-button" id="userMenuButton">
+                <span id="userInitials">U</span>
+            </button>
+            <div class="user-menu" id="userMenu">
+                <a href="#" id="logoutLink">Cerrar Sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="content">
+        <div class="form-panel">
+            <h1 style="text-align: center; color: #0078D7; margin-bottom: 25px;">
+                📋 Generar Cita Médica
+            </h1>
+
+            <!-- Mensajes -->
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+            <div id="loadingMessage" class="loading">⏳ Cargando...</div>
+
+            <!-- Formulario -->
+            <form id="citaForm">
+                <!-- Sección 1: Ubicación y Centro -->
+                <div class="form-section">
+                    <div class="section-title">📍 Ubicación y Centro Médico</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="ubicacion">Región/Ubicación *</label>
+                        <select id="ubicacion" class="form-select" required>
+                            <option value="" disabled selected>Selecciona una región</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="centro">Centro de Salud *</label>
+                        <select id="centro" class="form-select" disabled required>
+                            <option value="" disabled selected>Primero selecciona una región</option>
+                        </select>
+                        <div id="centroInfo" style="margin-top: 8px; font-size: 0.85rem; color: #666;"></div>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Especialidad y Doctor -->
+                <div class="form-section">
+                    <div class="section-title">👨‍⚕️ Especialidad y Médico</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="especialidad">Especialidad *</label>
+                        <select id="especialidad" class="form-select" disabled required>
+                            <option value="" disabled selected>Primero selecciona un centro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="doctor">Médico *</label>
+                        <select id="doctor" class="form-select" disabled required>
+                            <option value="" disabled selected>Primero selecciona una especialidad</option>
+                        </select>
+                        <div id="doctorInfo" style="margin-top: 8px; font-size: 0.85rem; color: #666;"></div>
+                    </div>
+                </div>
+
+                <!-- Sección 3: Fecha y Hora -->
+                <div class="form-section">
+                    <div class="section-title">📅 Fecha y Horario</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="fecha">Fecha de la Cita *</label>
+                        <input type="date" id="fecha" class="form-input" disabled required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="hora">Horario Disponible *</label>
+                        <select id="hora" class="form-select" disabled required>
+                            <option value="" disabled selected>Primero selecciona una fecha</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sección 4: Información Adicional -->
+                <div class="form-section">
+                    <div class="section-title">📝 Información Adicional</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="motivo">Motivo de Consulta</label>
+                        <textarea id="motivo" class="form-input" rows="3" placeholder="Describe brevemente el motivo de tu consulta"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="observaciones">Observaciones</label>
+                        <textarea id="observaciones" class="form-input" rows="2" placeholder="Información adicional (opcional)"></textarea>
+                    </div>
+                </div>
+
+                <!-- Botón Submit -->
+                <button type="submit" class="button" id="submitBtn">
+                    ✅ Confirmar y Generar Cita
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Ticket -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal" style="float: right; font-size: 1.5rem; cursor: pointer;">&times;</span>
+            <div id="ticketDisplay"></div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="imprimirBtn" class="button" style="background-color: #28a745;">🖨️ Imprimir</button>
+                <button id="descargarPdfBtn" class="button" style="background-color: #17a2b8;">📄 Descargar PDF</button>
+                <button id="nuevaCitaBtn" class="button" onclick="resetForm()">➕ Nueva Cita</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Externo -->
+    <script src="GenerarCita.js"></script>
+</body>
+</html>

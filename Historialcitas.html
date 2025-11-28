@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Citas - EsSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="Historialcitas.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="top-container">
+        <div class="logo-section">
+            <div class="top-logo-container">
+                <img src="https://dondemeatiendo.essalud.gob.pe/assets/images/logo-essalud-v2.png" alt="Logo EsSalud">
+            </div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="window.location.href='PrimerModulo.html'">Inicio</button>
+                <button class="nav-button" onclick="window.location.href='GestionDeHorariosEssalud.html'">Consultar médicos</button>
+                <button class="nav-button" onclick="window.location.href='GenerarCita.html'">Gestionar Citas</button>
+                <button class="nav-button" onclick="window.location.href='lugardeatencion.html'">¿Dónde me atiendo?</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button id="notifications-button" class="user-menu-button" title="Notificaciones" style="position: relative;">
+                    <span style="font-size: 18px;">🔔</span>
+                    <span id="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center;">0</span>
+                </button>
+                <div class="relative">
+                    <button id="user-menu-button" class="user-menu-button">
+                        <span id="user-initials">U</span>
+                    </button>
+                    <div id="user-menu" class="user-menu">
+                        <a href="#" id="logout">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DE NOTIFICACIONES -->
+    <div id="notifications-panel" class="notifications-panel">
+        <div class="notifications-header">
+            <span>🔔 Notificaciones</span>
+            <button style="background: transparent; border: none; color: white; cursor: pointer; font-size: 20px;" onclick="closeNotifications()">&times;</button>
+        </div>
+        <div class="notifications-body" id="notifications-body">
+            <div class="notification-empty">
+                <p style="font-size: 16px; margin-bottom: 10px;">🔭</p>
+                <p>No tienes notificaciones</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content-box">
+            <div class="modal-title" id="modal-title">Confirmación</div>
+            <div class="modal-text" id="modal-text">¿Estás seguro?</div>
+            <div class="modal-actions">
+                <button class="modal-button secondary" onclick="closeModal()">Cancelar</button>
+                <button class="modal-button primary" id="modal-confirm-button" onclick="confirmAction()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-content">
+        <!-- HEADER -->
+        <div class="page-header">
+            <h1>📋 Historial de Citas Médicas</h1>
+            <p id="user-email-display">Cargando información del usuario...</p>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="stats-container" id="stats-container" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-card-header">Total de Citas</div>
+                <div class="stat-card-value" id="stat-total">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">✅ Programadas</div>
+                <div class="stat-card-value" id="stat-programadas" style="color: #28a745;">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">✓ Completadas</div>
+                <div class="stat-card-value" id="stat-completadas" style="color: #0078D7;">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">❌ Canceladas</div>
+                <div class="stat-card-value" id="stat-canceladas" style="color: #dc3545;">0</div>
+            </div>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters-container" id="filters-container" style="display: none;">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">Buscar por código</label>
+                    <input type="text" class="filter-input" id="filter-codigo" placeholder="Ej: CITA20250001">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select class="filter-select" id="filter-estado">
+                        <option value="">Todos los estados</option>
+                        <option value="PROGRAMADA">Programadas</option>
+                        <option value="EXPIRADA">Expiradas</option>
+                        <option value="COMPLETADA">Completadas</option>
+                        <option value="CANCELADA">Canceladas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Especialidad</label>
+                    <select class="filter-select" id="filter-especialidad">
+                        <option value="">Todas las especialidades</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: flex-end;">
+                    <button class="filter-button" onclick="applyFilters()">Filtrar</button>
+                    <button class="filter-button secondary" onclick="resetFilters()">Limpiar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOADER -->
+        <div class="loader" id="loader">
+            <div class="loader-spinner"></div>
+            <p style="margin-top: 20px; color: #666; font-size: 16px;">Cargando historial de citas...</p>
+        </div>
+
+        <!-- ERROR STATE -->
+        <div class="error-state" id="error-state" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <div class="error-message" id="error-message">Error al cargar el historial</div>
+            <button class="btn-primary" onclick="loadHistorial()">Reintentar</button>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="empty-state" style="display: none;">
+            <div class="empty-state-icon">📅</div>
+            <div class="empty-state-title">No tienes citas registradas</div>
+            <div class="empty-state-text">Aún no has programado ninguna cita médica</div>
+            <button class="btn-primary" onclick="window.location.href='GenerarCita.html'">Programar mi primera cita</button>
+        </div>
+
+        <!-- CONTAINER DE CITAS -->
+        <div class="citas-container" id="citas-container"></div>
+    </div>
+
+    <script src="Historialcitas.js"></script>
+</body>
+</html>

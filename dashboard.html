@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Informes y Monitoreo de Citas - EsSalud Los Olivos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- TOP BAR -->
+    <div class="top-container">
+        <div class="logo-section">
+            <div class="top-logo-container">
+                <img src="https://dondemeatiendo.essalud.gob.pe/assets/images/logo-essalud-v2.png" alt="Logo EsSalud">
+            </div>
+        </div>
+        <div class="nav-section">
+            <h1 class="dashboard-title">
+                <i class="fas fa-chart-line"></i> Panel de Informes y Monitoreo de Citas
+                <span class="district-badge">
+                    <i class="fas fa-map-marker-alt"></i> Los Olivos
+                </span>
+            </h1>
+            <button class="btn-back" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i> Volver al inicio
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container-fluid mt-4 px-3 px-md-4">
+        <!-- FILTERS SECTION -->
+        <div class="filters-section">
+            <h2 class="filters-title">
+                <i class="fas fa-filter"></i>
+                Filtros de Búsqueda - Distrito Los Olivos
+            </h2>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-2 col-sm-6">
+                    <label class="filter-label">
+                        <i class="fas fa-venus-mars"></i> Género
+                    </label>
+                    <select class="form-select" id="filtroGenero" onchange="aplicarFiltros()">
+                        <option value="Todos">Todos</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Masculino">Masculino</option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <label class="filter-label">
+                        <i class="fas fa-calendar-alt"></i> Año
+                    </label>
+                    <select class="form-select" id="filtroAnio" onchange="aplicarFiltros()">
+                        <option value="Todos">Todos</option>
+                        <option value="2024" selected>2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <label class="filter-label">
+                        <i class="fas fa-calendar"></i> Mes
+                    </label>
+                    <select class="form-select" id="filtroMes" onchange="aplicarFiltros()">
+                        <option value="Todos">Todos</option>
+                        <option value="Enero">Enero</option>
+                        <option value="Febrero">Febrero</option>
+                        <option value="Marzo">Marzo</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Mayo">Mayo</option>
+                        <option value="Junio">Junio</option>
+                        <option value="Julio">Julio</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Septiembre">Septiembre</option>
+                        <option value="Octubre">Octubre</option>
+                        <option value="Noviembre" selected>Noviembre</option>
+                        <option value="Diciembre">Diciembre</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <label class="filter-label">
+                        <i class="fas fa-hospital"></i> Centro de Salud EsSalud - Los Olivos
+                    </label>
+                    <select class="form-select" id="filtroCentro" onchange="aplicarFiltros()">
+                        <option value="Todos">Todos los centros</option>
+                        <option value="Policlínico Los Olivos">Policlínico Los Olivos</option>
+                        <option value="UBAP Villa Sol">UBAP Villa Sol</option>
+                        <option value="Policlínico El Trébol">Policlínico El Trébol</option>
+                        <option value="Policlínico Pro Lima">Policlínico Pro Lima</option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <button class="btn btn-clear-filters w-100" onclick="limpiarFiltros()">
+                        <i class="fas fa-sync-alt"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOADING SPINNER -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p>Actualizando datos...</p>
+        </div>
+
+        <!-- DASHBOARD CONTENT -->
+        <div id="dashboardContent">
+            <!-- KPI CARDS -->
+            <div class="row mb-4">
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="kpi-value" id="totalCitas">1096</div>
+                        <div class="kpi-label">Total Citas Atendidas</div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="kpi-value" id="porcentajeAsistencia">21.92%</div>
+                        <div class="kpi-label">Porcentaje de Asistencia</div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="kpi-value" id="porcentajePrimeras">49.92%</div>
+                        <div class="kpi-label">Porcentaje de Primeras Atenciones</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS ROW 1 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Número de citas por especialidad médica
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="chartEspecialidades"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            Evolución mensual de citas
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="chartEvolucion"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS ROW 2 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Cantidad y porcentaje por estado de las citas
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="chartEstados"></canvas>
+                        </div>
+                        <div class="status-legend">
+                            <div class="legend-item">
+                                <div class="legend-color pendiente"></div>
+                                <span>Pendiente</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color confirmada"></div>
+                                <span>Confirmada</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color atendida"></div>
+                                <span>Atendida</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-hospital-alt"></i>
+                            Distribución de citas por centro de salud
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="chartCentros"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript Externo -->
+    <script src="dashboard.js"></script>
+</body>
+</html>

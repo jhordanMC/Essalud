@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disponibilidad de Médicos - EsSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="GestionDeHorariosEssalud.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="top-container">
+        <div class="logo-section">
+            <div class="top-logo-container">
+                <img src="https://dondemeatiendo.essalud.gob.pe/assets/images/logo-essalud-v2.png" alt="Logo EsSalud">
+            </div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="window.location.href='PrimerModulo.html'">Inicio</button>
+                <button class="nav-button" onclick="window.location.href='GenerarCita.html'">Gestionar Citas</button>
+                <button class="nav-button" onclick="window.location.href='lugardeatencion.html'">¿Dónde me atiendo?</button>
+                <button class="nav-button" onclick="window.location.href='Historialcitas.html'">Ver historial</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button id="notifications-button" class="user-menu-button" title="Notificaciones" style="position: relative;">
+                    <span style="font-size: 18px;">🔔</span>
+                </button>
+                <div class="relative">
+                    <button id="user-menu-button" class="user-menu-button">
+                        <span id="user-initials">U</span>
+                    </button>
+                    <div id="user-menu" class="user-menu">
+                        <a href="#" id="logout">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-content">
+        <!-- HEADER -->
+        <div class="page-header">
+            <h1>👨‍⚕️ Disponibilidad de Médicos</h1>
+            <p>Busca y consulta los horarios disponibles de nuestros especialistas</p>
+        </div>
+
+        <!-- GRID DE CONTENIDO -->
+        <div class="content-grid">
+            <!-- PANEL DE BÚSQUEDA -->
+            <div class="form-panel">
+                <h2>🔍 Buscar Médicos</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">📍 Región</label>
+                    <select id="region-select" class="form-select">
+                        <option value="" disabled selected>Selecciona una región</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🏥 Centro de Salud</label>
+                    <select id="centro-select" class="form-select" disabled>
+                        <option value="" disabled selected>Primero selecciona una región</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🩺 Especialidad</label>
+                    <select id="especialidad-select" class="form-select" disabled>
+                        <option value="" disabled selected>Primero selecciona un centro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">👨‍⚕️ Doctor (Opcional)</label>
+                    <select id="doctor-select" class="form-select" disabled>
+                        <option value="">Todos los doctores</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📅 Fecha</label>
+                    <input type="date" id="fecha-input" class="form-input" disabled>
+                </div>
+
+                <button id="buscar-btn" class="btn-primary" disabled>
+                    🔎 Buscar Disponibilidad
+                </button>
+            </div>
+
+            <!-- PANEL DE RESULTADOS -->
+            <div>
+                <div class="results-panel">
+                    <h2>📋 Resultados de Búsqueda</h2>
+                    
+                    <!-- Estado inicial -->
+                    <div id="empty-state" class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <p style="font-size: 16px; margin-bottom: 10px; font-weight: 500;">Realiza una búsqueda</p>
+                        <p style="font-size: 14px;">Selecciona los filtros y presiona "Buscar Disponibilidad"</p>
+                    </div>
+
+                    <!-- Loader -->
+                    <div id="loader-state" class="loader" style="display: none;">
+                        <div class="loader-spinner"></div>
+                        <p style="margin-top: 20px; color: #666;">Buscando médicos disponibles...</p>
+                    </div>
+
+                    <!-- Resultados -->
+                    <div id="results-container" style="display: none;"></div>
+                </div>
+
+                <!-- Mapa (se muestra cuando se selecciona un centro) -->
+                <div id="map-container" class="map-container" style="display: none;">
+                    <h3>📍 Ubicación del Centro</h3>
+                    <div id="hospital-info-box" class="hospital-info-box"></div>
+                    <iframe id="map-frame" class="map-frame" frameborder="0" scrolling="no"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Externo -->
+    <script src="GestionDeHorariosEssalud.js"></script>
+</body>
+</html>

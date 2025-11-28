@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essalud - Login</title>
+    <link rel="icon" type="image/jpeg" href="Familia.jpg">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="circle left"></div>
+        <div class="circle right"></div>
+        <div class="image-container">
+            <img src="Familia.jpg" alt="Imagen de familia">
+        </div>
+    </div>
+    
+    <div class="main-content" id="mainContent">
+        <div class="logo-container">
+            <img src="https://dondemeatiendo.essalud.gob.pe/assets/images/logo-essalud-v2.png" alt="Essalud Logo" class="logo">
+            <video src="https://apexamerica.com/wp-content/uploads/mundo-y-circulo-1.mp4" class="video" loop muted autoplay playsinline></video>
+        </div>
+        
+        <div class="container">
+            <img src="https://dondemeatiendo.essalud.gob.pe/assets/images/fondo-titulo.png" alt="Header Image" class="header-image">
+            <form class="login-form" onsubmit="handleLogin(event);">
+                <input type="email" id="id_paciente" placeholder="Correo Electrónico" required>
+                <div class="password-container">
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                    <span class="toggle-password" onclick="togglePassword()">
+                        <img src="https://images.icon-icons.com/2717/PNG/512/eye_closed_icon_173849.png" alt="Toggle Password">
+                    </span>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" id="recordar">
+                    <label for="recordar">Recordar Cuenta</label>
+                </div>
+                <button type="submit">Iniciar Sesión</button>
+                <div class="links">
+                    <a onclick="showForgotPasswordModal()">¿Olvidaste tu contraseña?</a>
+                    <p>¿Aún no tienes una cuenta Essalud?</p>
+                </div>
+                <button type="button" class="btn-secondary" onclick="showModal()">Crear cuenta</button>
+            </form>
+        </div>
+
+        <!-- Modal de Recuperar Contraseña -->
+        <div class="modal" id="forgotPasswordModal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+                <h2>Recuperar Contraseña</h2>
+                
+                <form class="modal-form" onsubmit="handlePasswordRecovery(event);">
+                    <div class="info-box">
+                        <p>Ingresa tu correo electrónico y te enviaremos un código de verificación para restablecer tu contraseña.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" id="recovery-email" placeholder="ejemplo@correo.com" required>
+                    </div>
+                    
+                    <div id="verification-section" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Código de Verificación</label>
+                            <input type="text" id="verification-code" placeholder="Ingrese el código de 6 dígitos" maxlength="6">
+                            <div class="error-message" id="code-error"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Nueva Contraseña</label>
+                            <div class="password-container">
+                                <input type="password" id="new-password-recovery" placeholder="Mínimo 8 caracteres">
+                                <span class="toggle-password" onclick="toggleRecoveryPassword()">
+                                    <img src="https://images.icon-icons.com/2717/PNG/512/eye_closed_icon_173849.png" alt="Toggle Password">
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Confirmar Nueva Contraseña</label>
+                            <div class="password-container">
+                                <input type="password" id="confirm-password-recovery" placeholder="Confirme su contraseña">
+                                <span class="toggle-password" onclick="toggleConfirmRecoveryPassword()">
+                                    <img src="https://images.icon-icons.com/2717/PNG/512/eye_closed_icon_173849.png" alt="Toggle Password">
+                                </span>
+                            </div>
+                            <div class="error-message" id="recovery-password-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="success-message" id="recovery-success"></div>
+                    
+                    <button type="submit" class="submit-btn" id="recovery-btn">
+                        Enviar Código
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal de Crear Cuenta -->
+        <div class="modal" id="createAccountModal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2>Crear cuenta EsSalud</h2>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <form class="modal-form" onsubmit="handleRegister(event);">
+                    <div class="form-group">
+                        <label class="form-label">Tipo de documento</label>
+                        <div class="document-container">
+                            <div class="document-select-wrapper">
+                                <img src="https://static.vecteezy.com/system/resources/previews/007/229/901/non_2x/identity-card-line-icon-vector.jpg" alt="Document Icon" class="document-icon">
+                                <select name="document-type" id="document-type" required onchange="toggleCharacterVerifier()">
+                                    <option value="dni" selected>DNI – Documento Nacional de Identidad</option>
+                                    <option value="ce">CE – Carnet de Extranjería / Pasaporte</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="character-verifier-group">
+                        <label class="form-label">Carácter Verificador</label>
+                        <input type="text" id="character-verifier" placeholder="Dígito verificador" required maxlength="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Número de Documento</label>
+                        <input type="text" id="document-number" placeholder="Ingrese su número de documento" required maxlength="12" oninput="validateDocumentNumber()">
+                        <div class="error-message" id="document-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nombres Completos</label>
+                        <input type="text" id="full-names" placeholder="Ingrese sus nombres" required oninput="validateNames()">
+                        <div class="error-message" id="names-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Apellidos Completos</label>
+                        <input type="text" id="last-names" placeholder="Ingrese sus apellidos" required oninput="validateNames()">
+                        <div class="error-message" id="lastnames-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" id="birth-date" required onchange="validateAge()">
+                        <div class="error-message" id="age-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" id="email" placeholder="ejemplo@correo.com" required oninput="validateEmail()">
+                        <div class="error-message" id="email-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Número de Celular</label>
+                        <input type="tel" id="phone" placeholder="999123456" required maxlength="9" oninput="validatePhone()">
+                        <div class="error-message" id="phone-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <div class="password-container">
+                            <input type="password" id="new-password" placeholder="Mínimo 8 caracteres" required oninput="validatePassword()">
+                            <span class="toggle-password" onclick="toggleNewPassword()">
+                                <img src="https://images.icon-icons.com/2717/PNG/512/eye_closed_icon_173849.png" alt="Toggle Password">
+                            </span>
+                        </div>
+                        <div class="strength-indicator">
+                            <div class="progress-bar" style="width: 150px; margin: 0;">
+                                <div class="progress-fill" id="strength-bar"></div>
+                            </div>
+                            <span class="strength-text" id="strength-text">Muy débil</span>
+                        </div>
+                        <div class="error-message" id="password-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Contraseña</label>
+                        <div class="password-container">
+                            <input type="password" id="confirm-password" placeholder="Confirme su contraseña" required oninput="validatePasswordMatch()">
+                            <span class="toggle-password" onclick="toggleConfirmPassword()">
+                                <img src="https://images.icon-icons.com/2717/PNG/512/eye_closed_icon_173849.png" alt="Toggle Password">
+                            </span>
+                        </div>
+                        <div class="error-message" id="confirm-password-error"></div>
+                    </div>
+                    
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">
+                            Acepto los <a onclick="showTerms()">Términos y Condiciones</a> y la 
+                            <a onclick="showPrivacyPolicy()">Política de Privacidad</a> de EsSalud
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="register-btn" disabled>
+                        Crear Cuenta
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Términos y Condiciones -->
+        <div class="modal" id="termsModal">
+            <div class="modal-content modal-content-terms">
+                <span class="close-modal" onclick="closeTermsModal()">&times;</span>
+                <h2>📋 Términos y Condiciones - EsSalud</h2>
+                
+                <h3>1. Aceptación de los Términos</h3>
+                <p>Al acceder y utilizar los servicios digitales de EsSalud, usted acepta estar legalmente vinculado por estos Términos y Condiciones. Si no está de acuerdo con alguna parte de estos términos, por favor, no utilice nuestros servicios.</p>
+
+                <h3>2. Uso del Servicio</h3>
+                <ul>
+                    <li><strong>Uso Personal:</strong> Los servicios están destinados únicamente para uso personal y no comercial.</li>
+                    <li><strong>Información Veraz:</strong> Usted se compromete a proporcionar información precisa, actual y completa durante el registro.</li>
+                    <li><strong>Confidencialidad:</strong> Es su responsabilidad mantener la confidencialidad de sus credenciales de acceso.</li>
+                    <li><strong>Uso Apropiado:</strong> No debe usar nuestros servicios para ningún propósito ilegal o no autorizado.</li>
+                </ul>
+
+                <h3>3. Privacidad y Protección de Datos</h3>
+                <p>EsSalud se compromete a proteger su privacidad y datos personales de acuerdo con la Ley N° 29733 - Ley de Protección de Datos Personales del Perú.</p>
+                <ul>
+                    <li>Recopilamos solo la información necesaria para prestar nuestros servicios de salud.</li>
+                    <li>Sus datos médicos están protegidos con los más altos estándares de seguridad.</li>
+                    <li>No compartimos su información con terceros sin su consentimiento explícito.</li>
+                </ul>
+
+                <div class="highlight">
+                    <strong>⚕️ Importante:</strong> Sus datos de salud son estrictamente confidenciales y están protegidos por el secreto profesional médico establecido en la legislación peruana.
+                </div>
+
+                <h3>4. Servicios Ofrecidos</h3>
+                <p>A través de nuestra plataforma digital, usted puede:</p>
+                <ul>
+                    <li>Agendar citas médicas</li>
+                    <li>Consultar resultados de exámenes</li>
+                    <li>Acceder a su historial médico</li>
+                    <li>Realizar teleconsultas</li>
+                    <li>Solicitar certificados médicos</li>
+                </ul>
+
+                <h3>5. Responsabilidades del Usuario</h3>
+                <ul>
+                    <li>Asistir puntualmente a las citas programadas o cancelarlas con anticipación.</li>
+                    <li>Mantener actualizada su información de contacto.</li>
+                    <li>No compartir su cuenta con terceros.</li>
+                    <li>Reportar cualquier actividad sospechosa en su cuenta.</li>
+                </ul>
+
+                <h3>6. Limitaciones de Responsabilidad</h3>
+                <p>EsSalud no será responsable por:</p>
+                <ul>
+                    <li>Interrupciones del servicio debido a mantenimiento programado o no programado.</li>
+                    <li>Pérdida de datos causada por fallas técnicas fuera de nuestro control.</li>
+                    <li>Daños indirectos o consecuentes derivados del uso de nuestros servicios.</li>
+                </ul>
+
+                <h3>7. Modificaciones</h3>
+                <p>EsSalud se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de nuestra plataforma y entrarán en vigencia inmediatamente después de su publicación.</p>
+
+                <h3>8. Contacto</h3>
+                <div class="highlight">
+                    <p><strong>📧 Email:</strong> consultas@essalud.gob.pe</p>
+                    <p><strong>📞 Teléfono:</strong> 01-411-1111</p>
+                    <p><strong>🌐 Web:</strong> www.essalud.gob.pe</p>
+                </div>
+
+                <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #ddd;">
+                    Última actualización: Octubre 2025
+                </p>
+
+                <button class="accept-terms-btn" onclick="closeTermsModal()">
+                    Entendido
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de Política de Privacidad -->
+        <div class="modal" id="privacyModal">
+            <div class="modal-content modal-content-terms">
+                <span class="close-modal" onclick="closePrivacyModal()">&times;</span>
+                <h2>🔒 Política de Privacidad - EsSalud</h2>
+                
+                <h3>1. Información que Recopilamos</h3>
+                <p>En EsSalud recopilamos la siguiente información:</p>
+                
+                <h4>Datos Personales:</h4>
+                <ul>
+                    <li>Nombres y apellidos completos</li>
+                    <li>Documento de identidad (DNI, CE, Pasaporte)</li>
+                    <li>Fecha de nacimiento</li>
+                    <li>Dirección de residencia</li>
+                    <li>Correo electrónico y número de teléfono</li>
+                </ul>
+
+                <h4>Información Médica:</h4>
+                <ul>
+                    <li>Historial médico y diagnósticos</li>
+                    <li>Resultados de exámenes y análisis</li>
+                    <li>Prescripciones médicas</li>
+                    <li>Alergias y condiciones preexistentes</li>
+                    <li>Tratamientos realizados</li>
+                </ul>
+
+                <h4>Datos de Navegación:</h4>
+                <ul>
+                    <li>Dirección IP</li>
+                    <li>Tipo de navegador y dispositivo</li>
+                    <li>Páginas visitadas y tiempo de navegación</li>
+                    <li>Cookies y tecnologías similares</li>
+                </ul>
+
+                <h3>2. Uso de la Información</h3>
+                <p>Utilizamos su información para:</p>
+                <ul>
+                    <li><strong>Prestación de Servicios:</strong> Brindar atención médica de calidad y gestionar su historial clínico.</li>
+                    <li><strong>Comunicaciones:</strong> Enviar recordatorios de citas, resultados médicos y notificaciones importantes.</li>
+                    <li><strong>Mejora del Servicio:</strong> Analizar el uso de la plataforma para mejorar nuestros servicios.</li>
+                    <li><strong>Cumplimiento Legal:</strong> Cumplir con las obligaciones legales y regulatorias del sector salud.</li>
+                </ul>
+
+                <div class="highlight">
+                    <strong>🛡️ Compromiso de Seguridad:</strong> Toda su información médica está encriptada y protegida con certificados SSL/TLS de última generación.
+                </div>
+
+                <h3>3. Compartir Información</h3>
+                <p>Su información médica puede ser compartida únicamente en los siguientes casos:</p>
+                <ul>
+                    <li>Con profesionales de la salud autorizados que participan en su atención.</li>
+                    <li>Con laboratorios y centros de diagnóstico para realizar exámenes.</li>
+                    <li>Cuando sea requerido por ley o autoridad competente.</li>
+                    <li>Con su consentimiento expreso por escrito.</li>
+                </ul>
+
+                <p><strong>Nunca</strong> vendemos, alquilamos o comercializamos su información personal a terceros.</p>
+
+                <h3>4. Seguridad de los Datos</h3>
+                <p>Implementamos múltiples medidas de seguridad:</p>
+                <ul>
+                    <li>🔐 Encriptación de datos en tránsito y en reposo</li>
+                    <li>🔑 Autenticación de dos factores disponible</li>
+                    <li>👥 Control de acceso basado en roles</li>
+                    <li>📊 Auditorías de seguridad periódicas</li>
+                    <li>💾 Copias de seguridad automáticas y encriptadas</li>
+                    <li>🚨 Monitoreo continuo de actividades sospechosas</li>
+                </ul>
+
+                <h3>5. Sus Derechos</h3>
+                <p>De acuerdo con la Ley de Protección de Datos Personales, usted tiene derecho a:</p>
+                <ul>
+                    <li><strong>Acceso:</strong> Conocer qué datos personales tenemos sobre usted.</li>
+                    <li><strong>Rectificación:</strong> Solicitar la corrección de datos inexactos o incompletos.</li>
+                    <li><strong>Cancelación:</strong> Solicitar la eliminación de sus datos personales.</li>
+                    <li><strong>Oposición:</strong> Oponerse al tratamiento de sus datos personales.</li>
+                    <li><strong>Portabilidad:</strong> Recibir una copia de sus datos en formato estructurado.</li>
+                </ul>
+
+                <div class="highlight">
+                    <p>Para ejercer cualquiera de estos derechos, puede contactarnos a:</p>
+                    <p><strong>📧 privacidad@essalud.gob.pe</strong></p>
+                    <p>Responderemos a su solicitud en un plazo máximo de 10 días hábiles.</p>
+                </div>
+
+                <h3>6. Cookies y Tecnologías de Rastreo</h3>
+                <p>Utilizamos cookies para:</p>
+                <ul>
+                    <li>Mantener su sesión activa</li>
+                    <li>Recordar sus preferencias</li>
+                    <li>Analizar el uso de la plataforma</li>
+                    <li>Mejorar la experiencia del usuario</li>
+                </ul>
+                <p>Puede configurar su navegador para rechazar cookies, aunque esto puede afectar la funcionalidad del sitio.</p>
+
+                <h3>7. Retención de Datos</h3>
+                <p>Conservamos su información médica de acuerdo con las regulaciones del sector salud en Perú, que establecen un período mínimo de conservación de 20 años para historias clínicas.</p>
+
+                <h3>8. Menores de Edad</h3>
+                <p>Los servicios digitales de EsSalud requieren que los usuarios sean mayores de 18 años. La información de menores solo puede ser gestionada por sus padres o tutores legales.</p>
+
+                <h3>9. Cambios a esta Política</h3>
+                <p>Nos reservamos el derecho de actualizar esta política de privacidad. Los cambios importantes serán notificados por correo electrónico y en nuestra plataforma.</p>
+
+                <h3>10. Contacto</h3>
+                <div class="highlight">
+                    <p><strong>Oficial de Protección de Datos</strong></p>
+                    <p>📧 Email: privacidad@essalud.gob.pe</p>
+                    <p>📞 Teléfono: 01-411-1111 (Opción 5)</p>
+                    <p>📍 Dirección: Jr. Arica N° 363, Lima, Perú</p>
+                </div>
+
+                <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #ddd;">
+                    Última actualización: Octubre 2025<br>
+                    Versión 2.0
+                </p>
+
+                <button class="accept-terms-btn" onclick="closePrivacyModal()">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="index.js"></script>
+</body>
+</html>
